@@ -1,7 +1,7 @@
 export interface CoordinateModel {
     name: string,
     local_names: string,
-    lat: string,
-    lon: string,
+    lat: number,
+    lon: number,
     country: string
 }
