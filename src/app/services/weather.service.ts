@@ -17,6 +17,15 @@ constructor(private httpClient: HttpClient) { }
 
   getWeatherData(payload) : Observable<WeatherModel>{
     let params = new HttpParams();
+    if(!!payload.lat){
+      params = params.append('lat', `${payload.lat}`)
+    }
+    if(!!payload.lon){
+      params = params.append('lon', `${payload.lon}`)
+    }
+    if(!!payload.exclude){
+      params = params.append('exclude', `${payload.exclude}`)
+    }
     if(!!appid){
       params = params.append('appid', `${appid}`)
     }

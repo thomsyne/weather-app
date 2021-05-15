@@ -16,7 +16,7 @@ export class LocationService {
 
 constructor(private httpClient: HttpClient) { }
 
-  getLocationCoordinates(city: string) : Observable<CoordinateModel> {
+  getLocationCoordinates(city: string) : Observable<CoordinateModel[]> {
     let params = new HttpParams();
     if (!!city){
       params = params.append('q', `${city}`)
@@ -25,7 +25,7 @@ constructor(private httpClient: HttpClient) { }
       params = params.append('appid', `${appid}`)
     }
 
-    return this.httpClient.get<CoordinateModel>(`${ApiConstant.locationUrl}`, {params}
+    return this.httpClient.get<CoordinateModel[]>(`${ApiConstant.locationUrl}`, {params}
     ).pipe(
       catchError(ErrorHandlers.handleApiError)
     )
