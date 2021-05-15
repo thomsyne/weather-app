@@ -7,7 +7,9 @@ export interface WeatherModel {
   minutely: Minutely[],
   hourly: Hourly[],
   daily: Daily[],
-  alerts: Alert[]
+  alerts: Alert[],
+  name?: string,
+  date?: Date
 }
 
 interface Current {
