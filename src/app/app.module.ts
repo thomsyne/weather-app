@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { DetailPageModule } from './components/detailpage/detailpage.module';
 import { HomePageModule } from './components/homepage/homepage.module';
 import { addHistoryReducer } from './store/history.reducer';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { addHistoryReducer } from './store/history.reducer';
     DetailPageModule,
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(),
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
