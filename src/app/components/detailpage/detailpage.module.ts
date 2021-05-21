@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DetailpageComponent } from './detailpage.component';
+import { ChartsModule } from 'ng2-charts';
+import { HistoryComponent } from 'src/app/shared/history/history.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [DetailpageComponent],
@@ -12,7 +15,9 @@ import { DetailpageComponent } from './detailpage.component';
     DetailPageRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    ChartsModule,
+    SharedModule
   ],
 })
 export class DetailPageModule { }
