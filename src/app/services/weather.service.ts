@@ -26,6 +26,9 @@ constructor(private httpClient: HttpClient) { }
     if(!!payload.exclude){
       params = params.append('exclude', `${payload.exclude}`)
     }
+    if(!!payload.units){
+      params = params.append('units', `${payload.units}`)
+    }
     if(!!appid){
       params = params.append('appid', `${appid}`)
     }
