@@ -1,6 +1,9 @@
 # WeatherApp
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.12.
+This is a sample app to display stste management, subscription, API class, re-usable component, parent-child communication and Angular routing.
+Enter a city name in the search box and click enter to get a graphical and tabular predictive view to weather data for the next 7 days. 
+There is also a view for search history.
 
 ## Development server
 

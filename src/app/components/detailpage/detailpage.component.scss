@@ -2,3 +2,29 @@ button:disabled{
     opacity: 0.3;
     cursor:not-allowed;
   }
+
+  @media only screen and (max-width: 768px) {
+    .canvas-class {
+      height: 100%;
+      width: 100%
+    }
+
+    // .chart-wrapper {
+    //   position: relative; 
+    //   height:40vh; 
+    //   width:95vw
+    // }
+  }
+
+  @media screen and (min-width:320px) and (max-width:767px) and (orientation:landscape) {
+    .canvas-class {
+      height: 100% !important;
+      width: 100% !important;
+    }
+    .chart-wrapper {
+      position: relative; 
+      height:60vh; 
+      width:95vw
+    }
+
+    }

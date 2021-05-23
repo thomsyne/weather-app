@@ -1,3 +1,5 @@
+import { ToastrService } from 'ngx-toastr';
+import { ApplicationPaths } from './../../core/constants/app.constants';
 import { DatePipe } from '@angular/common';
 import { WeatherModel } from './../../core/models/weather.model';
 import { WeatherService } from './../../services/weather.service';
@@ -20,8 +22,6 @@ export class DetailpageComponent implements OnInit, OnDestroy {
 
   chartData: any = [];
   chartLabels: any = [];
-  page=1;
-  itemsPerPage=3;
 
   public lineChartData: ChartDataSets[] = [];
   public lineChartLabels: Label[] = [];
@@ -99,24 +99,24 @@ export class DetailpageComponent implements OnInit, OnDestroy {
 
 
   lineLegends = [
-    'Temperature',
-    'Humidity',
-    'Wind'
+    'Temperature (°C)',
+    'Humidity (%)',
+    'Wind (km/h)'
   ]
 
   historys: HistoryModel[];
   lat: number;
   lon: number;
   weatherDetails: WeatherModel;
-  subscription: Subscription;
-  example:string;
+  subscription: Subscription[] = [];
+
   start: number = 0;
   stop: number = 3;
   cityName: string;
   todayDate = new Date();
   weatherData: WeatherModel;
   arrayLength: number;
-  itemsOnPage: number;
+  itemsPerPage: number = 3;
   weatherPassed: WeatherModel;
 
   displayChart: boolean = true;
@@ -125,24 +125,14 @@ export class DetailpageComponent implements OnInit, OnDestroy {
     private store: Store<HistoryState>,
     private readonly weatherService: WeatherService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly toastr: ToastrService
   ) { 
-    this.router.routeReuseStrategy.shouldReuseRoute = function () {
-      return false;
-    }
-  }
 
-  public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
-  }
-
-  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
   }
 
   ngOnInit() {
     const weatherPayload = history.state.data || this.weatherPassed;
-    console.log(weatherPayload);
     history.state.data = null;
 
     if(weatherPayload){
@@ -150,28 +140,29 @@ export class DetailpageComponent implements OnInit, OnDestroy {
       this.getWeatherDetails(weatherPayload);
     }
 
-    this.subscription = this.store.select(state => state.history).subscribe(
+    this.subscription.push(this.store.select(state => state.history).subscribe(
       (response)=> {
         this.arrayLength = response.length;
         this.historys = response;
       }
-    );
+    ));
   }
 
   getWeatherDetails(weatherPayload){
     const payload = {
       lat: weatherPayload.lat,
       lon: weatherPayload.lon,
-      exclude: 'minutely,hourly,alerts'
+      exclude: 'minutely,hourly,alerts',
+      units: 'metric'
     }
-    this.weatherService.getWeatherData(payload).subscribe(
+    this.subscription.push(this.weatherService.getWeatherData(payload).subscribe(
       (resp)=> {
         this.weatherData = resp;
         this.reduceModel();
       }, (error) => {
-
+        this.toastr.error('Error encountered. Please try again later.')
       }
-    )
+    ));
   }
 
   reduceModel() {
@@ -186,7 +177,7 @@ export class DetailpageComponent implements OnInit, OnDestroy {
 
       humidList.push(this.weatherData.daily[i].humidity);
 
-      windList.push(this.weatherData.daily[i].wind_speed);
+      windList.push(this.weatherData.daily[i].wind_speed * 3.6);
 
       chartLabs.push(new Date(this.weatherData.daily[i].dt * 1000).toDateString());
 
@@ -215,8 +206,7 @@ export class DetailpageComponent implements OnInit, OnDestroy {
       
       case 'table':
         this.displayChart = false;
-        break;
-      
+        break;    
     }
   }
 
@@ -226,10 +216,14 @@ export class DetailpageComponent implements OnInit, OnDestroy {
     window.scroll(0,0);
   }
 
+  routeToHome(){
+    this.router.navigate([ApplicationPaths.Home])
+  }
+
   @HostListener('unloaded')
   ngOnDestroy(){
     window.history.back
-    this.subscription.unsubscribe();
+    this.subscription.forEach(subscription => subscription.unsubscribe());
   }
 
 }

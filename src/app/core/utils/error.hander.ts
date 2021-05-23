@@ -13,7 +13,6 @@ export class ErrorHandlers {
     switch (errorRes.status) {
       case 401:
         errorMessage = 'Un Authorized';
-        window.location.href ='/login'
         break;
       case 400:
         errorList = errorRes.error.errors;

@@ -1,5 +1,3 @@
-import { environment } from "src/environments/environment";
-
 export const ApiConstant = {
    locationUrl: 'http://api.openweathermap.org/geo/1.0/direct',
    apiUrl: 'https://api.openweathermap.org/data/2.5/onecall',

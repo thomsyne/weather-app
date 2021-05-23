@@ -13,16 +13,16 @@ import { HistoryState } from 'src/app/store/history.state';
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss']
+  styleUrls: ['./history.component.scss'],
 })
 export class HistoryComponent implements OnInit {
-  @Input () historys: HistoryModel[];
+  @Input() historys: HistoryModel[];
   page: number = 1;
-  @Input () itemsPerPage: number;
-  @Input () start: number;
-  @Input () stop: number;
+  @Input() itemsPerPage: number;
+  @Input() start: number;
+  @Input() stop: number;
 
-  @Output() citySelected: EventEmitter<any> =   new EventEmitter();
+  @Output() citySelected: EventEmitter<any> = new EventEmitter();
   cityName: string;
   lat: number;
   lon: number;
@@ -34,101 +34,99 @@ export class HistoryComponent implements OnInit {
     private store: Store<HistoryState>,
     private readonly locationService: LocationService,
     private readonly toastrService: ToastrService,
-    private readonly router: Router,
-  ) { 
-    this.subscription = router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      if (event.url.endsWith("detail")){
-        this.onDetailPage = true;
-      } else {
-        this.onDetailPage = false;
-      }
-    });
-    }
-  
-
-  ngOnInit() {
+    private readonly router: Router
+  ) {
+    this.subscription = router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        if (event.url.endsWith('detail')) {
+          this.onDetailPage = true;
+        } else {
+          this.onDetailPage = false;
+        }
+      });
   }
+
+  ngOnInit() {}
 
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  goBack(){
-    this.start = this.start - 3;
-    this.stop = this.stop - 3;
+  goBack() {
+    this.start = this.start - this.itemsPerPage;
+    this.stop = this.stop - this.itemsPerPage;
 
-    this.page = this.page -1
+    this.page = this.page - 1;
 
     this.backDisabled;
   }
 
-  goForward(){
-    this.start = this.start + 3;
-    this.stop = this.stop + 3;
+  goForward() {
+    this.start = this.start + this.itemsPerPage;
+    this.stop = this.stop + this.itemsPerPage;
 
     this.page = this.page + 1;
 
     this.forwardEnabled;
   }
 
-  get backDisabled(): boolean{
+  get backDisabled(): boolean {
     return true ? this.start === 0 : false;
   }
 
-  get forwardEnabled(): boolean{
-    return true ? (this.historys.length > (this.page * this.itemsPerPage)) : false;
+  get forwardEnabled(): boolean {
+    return true ? this.historys.length > this.page * this.itemsPerPage : false;
   }
 
-  searchCity(cityName: string){
-    if (cityName.length < 3){
+  searchCity(cityName: string) {
+    if (cityName.length < 3) {
       this.toastrService.info('Please enter a longer search term');
       return;
     }
     this.locationService.getLocationCoordinates(cityName).subscribe(
       (response: CoordinateModel[]) => {
-        if (response.length > 0){
+        if (response.length > 0) {
           this.lat = response[0].lat;
-        this.lon = response[0].lon;
+          this.lon = response[0].lon;
 
-        console.log(response);
+          const payload = {
+            name: response[0].local_names.en,
+            date: this.todayDate,
+          };
 
-        const payload = {
-          name: response[0].local_names.en,
-          date: this.todayDate
-        }
+          const weatherPayload = {
+            lat: this.lat,
+            lon: this.lon,
+            search: response[0].local_names.en,
+          };
 
-        const weatherPayload = {
-          lat: this.lat,
-          lon: this.lon,
-          search: response[0].local_names.en
-        }
+          this.addHistory(payload);
 
-        this.addHistory(payload);
-
-        this.onDetailPage === true ? this.citySelected.emit(weatherPayload) : this.router.navigate([ApplicationPaths.Detail], {state: {data: weatherPayload}});
+          this.onDetailPage === true
+            ? this.citySelected.emit(weatherPayload)
+            : this.router.navigate([ApplicationPaths.Detail], {
+                state: { data: weatherPayload },
+              });
         } else {
-          this.toastrService.error('Location coordinates not found for ' + cityName);
+          this.toastrService.error(
+            'Location coordinates not found for ' + cityName
+          );
         }
-        
-
-      }, (error) => {
+      },
+      (error) => {
         this.toastrService.error('Error Encountered');
       }
-    )
-
-
+    );
   }
 
-  addHistory(payload){
+  addHistory(payload) {
     this.store.dispatch({
       type: 'ADD_HISTORY',
-      payload: <HistoryModel> {
-       name: payload.name,
-       date: payload.date
-      }
+      payload: <HistoryModel>{
+        name: payload.name,
+        date: payload.date,
+      },
     });
   }
-
 }
